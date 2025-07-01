@@ -1,36 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ugoku — Linkage Sim</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <title>Ugoku! Docs</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background-color: #0f0f0f;
+      color: #d4d4d4;
+      font-family: system-ui, sans-serif;
+      line-height: 1.6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    aside {
+      width: 250px;
+      padding: 1.5rem;
+      border-right: 1px solid #2e3440;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background-color: #121212;
+    }
+    aside h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #eceff4;
+    }
+    aside a {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #88c0d0;
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s ease;
+    }
+    aside a:hover {
+      color: #81a1c1;
+    }
+    main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 60px;
+      font-weight: 700;
+      border-bottom: 1px solid #2e3440;
+      padding-bottom: 0.5rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      border-bottom: 1px solid #2e3440;
+      padding-bottom: 0.3rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    pre {
+      background: #1e1e1e;
+      padding: 1rem;
+      overflow-x: auto;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 4px;
+    }
+    code {
+      background: #2e3440;
+      padding: 0.2em 0.4em;
+      font-family: monospace;
+      font-size: 0.95rem;
+      border-radius: 3px;
+    }
+    hr {
+      border-top: 3px solid #2e3440;
+    }
+  </style>
 </head>
-<body class="bg-[#1e1e1e] text-gray-200 font-mono h-screen flex items-center justify-center p-6">
+<body>
+  <aside>
+    <h2>On this page</h2>
+    <nav id="sidebar"></nav>
+  </aside>
 
-  <div class="text-center space-y-6 max-w-xl">
-    <h1 class="text-5xl font-bold">Ugoku</h1>
-    <p class="text-lg text-gray-400 leading-relaxed">
-      A minimalist, script-driven simulator for mechanical linkages.<br>
-      Inspired by OpenSCAD — powered by position-based dynamics.
-    </p>
+  <main>
+    <div id="content">Loading docs...</div>
+  </main>
 
-    <div class="flex justify-center space-x-4">
-      <a href="https://sim.ugoku.studio" class="inline-block w-40 text-center px-6 py-3 bg-[#3a3a3a] text-white rounded hover:bg-[#4a4a4a] transition">
-        Launch Sim
-      </a>
-      <a href="/docs/" class="inline-block w-40 text-center px-6 py-3 bg-[#3a3a3a] text-white rounded hover:bg-[#4a4a4a] transition">
-        Read Docs
-      </a>
-    </div>
+  <script>
+    fetch('docs.md')
+      .then(res => res.text())
+      .then(md => {
+        document.getElementById('content').innerHTML = marked.parse(md);
+        Prism.highlightAll();
+        generateSidebar();
+      });
 
-    <div>
-      <a href="https://github.com/ksgat/linksim" class="inline-block mt-4 px-6 py-3 bg-[#3a3a3a] text-white rounded hover:bg-[#4a4a4a] transition items-center">
-        Source
-      </a>
-    </div>
+    function generateSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.innerHTML = ''; 
 
-  </div>
+      const headings = document.querySelectorAll('#content h1, #content h2, #content h3');
+      headings.forEach(h => {
+        const id = h.textContent.toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\-]+/g, '');
+        h.id = id;
 
+        const link = document.createElement('a');
+        link.href = `#${id}`;
+        link.textContent = h.textContent;
+
+        if (h.tagName === 'H2') link.style.marginLeft = '0.5rem';
+        if (h.tagName === 'H3') link.style.marginLeft = '1rem';
+
+        sidebar.appendChild(link);
+      });
+    }
+  </script>
 </body>
 </html>
